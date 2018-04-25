@@ -1,0 +1,11 @@
+
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'django2:book_save' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <input type="hidden" id="id" name="id" value="{{ id }}">
+    <input type="submit" value="提交"/> ####### <a href="{% url 'django2:book_index' %}"><input type="button" value="返回列表"></a>
+</form>

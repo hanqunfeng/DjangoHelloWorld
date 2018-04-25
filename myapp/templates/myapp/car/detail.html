@@ -1,0 +1,41 @@
+{% load utils %}
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'myapp:car_save' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <input type="hidden" name="id" id="id" value="{{ car.id }}">
+    车牌号：<input type="text" name="carNum" id="carNum" value="{{ car.carNum }}"><br>
+    颜色：
+    <select name="carColor" id="carColor">
+        {% for color in colors %}
+            {% if color.0 == car.carColor %}
+                {#定义临时变量，这里只是为了演示，其实完全没必要弄个变量出来，另外需要注意定义变量时等号两边都不能有空格#}
+                {% with select="selected" %}
+                    <option value="{{ color.0 }}" selected="{{ select }}">{{ color.1 }}</option>
+                {% endwith %}
+            {% else %}
+                <option value="{{ color.0 }}">{{ color.1 }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    <br>
+    价格(万元)：<input type="text" name="carPrice" id="carPrice" value="{{ car.carPrice }}">
+    <br>
+    用户：
+    <select name="users" id="users" multiple style="width: 500px;height: 200px;">
+        {% for user in users %}
+            {% if user in car.user.all %}
+                <option value="{{ user.id }}" selected>{{ user.id }}----{{ user.name }}</option>
+            {% else %}
+                <option value="{{ user.id }}">{{ user.id }}----{{ user.name }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    <br>
+
+
+    <input type="submit" value="提交"/> ####### <a href="{% url 'myapp:car_index' %}"><input type="button"
+                                                                                           value="返回列表"></a>
+</form>

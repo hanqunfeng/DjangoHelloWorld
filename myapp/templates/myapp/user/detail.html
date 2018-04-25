@@ -1,0 +1,22 @@
+
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'myapp:user_save' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+       <input type="hidden" name="id" id="id" value="{{ user.id }}">
+        姓名：<input type="text" name="name" id="name" value="{{ user.name }}"><br>
+        出生日期：<input type="text" name="birth_day" id="birth_day" value="{{ user.birth_day|date:"Y-m-d" }}"><br>
+        手机号码：<input type="text" name="phone" id="phone" value="{{ user.phone }}"><br>
+        邮箱：<input type="text" name="email" id="email" value="{{ user.email }}"><br>
+        身份证号：<input type="text" name="cardId" id="cardId" value="{{ user.identitycard.cardId }}"><br>
+        地址：<input type="text" name="address" id="address" value="{{ user.identitycard.address }}"><br>
+        发证机关：<input type="text" name="issuing_organ" id="issuing_organ" value="{{ user.identitycard.issuing_organ }}"><br>
+        有效期截止：<input type="text" name="validity_date" id="validity_date" value="{{ user.identitycard.validity_date|date:"Y-m-d" }}"><br>
+
+
+
+
+    <input type="submit" value="提交"/> ####### <a href="{% url 'myapp:user_index' %}"><input type="button" value="返回列表"></a>
+</form>

@@ -1,0 +1,112 @@
+{% load static %}
+{% load i18n %}
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}"/>
+<script src="{% static 'polls/js/jquery-1.11.0.min.js' %}"></script>
+
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+<script src="{% static 'myapp/js/test.js' %}"></script>
+
+<h2>查询用户</h2>
+<a href="{% url 'myapp:user_index_year' '2018' %}">查询2018年出生的用户</a><br>
+<a href="{% url 'myapp:user_index_name' '测试' %}">查询姓名包含『测试』的用户</a><br>
+
+{{ _('Django site admin') }}<br>
+{{ _('my test local') }}<br>
+{% trans "my test local" %}<br>
+{#将翻译结果保存到变量中#}
+{% trans "my test local" as mylocal %}
+{{ mylocal }}<br>
+
+
+{% get_current_language as LANGUAGE_CODE %}
+Current language: {{ LANGUAGE_CODE }} <br>
+
+{% language 'en' %}
+    {% get_current_language as LANGUAGE_CODE %}
+    Current language: {{ LANGUAGE_CODE }} <br>
+    {{ _('Django site admin') }}<br>
+{% endlanguage %}
+
+====================
+{% get_current_language as LANGUAGE_CODE %}
+Current language: {{ LANGUAGE_CODE }} <br>
+
+
+<form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+    <input name="next" type="hidden" value="{{ redirect_to }}"/>
+    <select name="language">
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% for language in languages %}
+            <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                {{ language.name_local }} ({{ language.code }})
+            </option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Go"/>
+</form>
+<br>
+
+
+<br>
+{% verbatim myblock %}
+    Avoid template rendering via the {% verbatim %}{% endverbatim %} block.
+{% endverbatim myblock %}
+
+<a href="{% url 'myapp:user_detail' 0 %}">新增用户</a>
+
+{% if user_list %}
+    <ul>
+        {% for user in user_list %}
+            <li>{{ user.id }}#<a
+                    href="{% url 'myapp:user_detail' user.id %}">{{ user.name }}</a>#{{ user.birth_day|date:"Y-m-d" }}#
+                {#   条件判断支持 and, or, not, in, not in#}
+                {% if user.phone and user.phone != "None" %}
+                    {{ user.phone }}
+                {% endif %}
+                #
+                {% if user.email and user.email != "None" %}
+                    {{ user.email }}
+                {% endif %}
+                #
+                {{ user.identitycard.cardId }}
+                #
+                {% for car in user.car_set.all %}
+                    {{ car.carNum }} {% if forloop.last == False %}, {% endif %}
+                {% endfor %}
+                <a
+                        href="{% url 'myapp:user_delete' user.id %}">删除</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No users are available.</p>
+{% endif %}
+
+<div id="userdiv"></div>
+<div id="userlistdiv"></div>
+
+<script>
+
+    $.getJSON("{% url 'myapp:user_query_json_get' 1 %}", function(ret) {
+        $.each(ret, function (key, value) {
+            // key 为字典的 key，value 为对应的值
+            $("#userdiv").append(value.pk+"#"+value.fields.name+"#"+value.fields.birth_day+"#"+value.fields.phone+"#"+value.fields.email+"<br>")
+
+        });
+    });
+
+    $.getJSON("{% url 'myapp:user_query_json' %}", function(ret) {
+        $.each(ret, function (key, value) {
+            // key 为字典的 key，value 为对应的值
+            $("#userlistdiv").append(value.pk+"#"+value.fields.name+"#"+value.fields.birth_day+"#"+value.fields.phone+"#"+value.fields.email+"<br>")
+
+        });
+    })
+
+    alert(gettext('hello js'))
+    alert(gettext('o my god'))
+
+</script>

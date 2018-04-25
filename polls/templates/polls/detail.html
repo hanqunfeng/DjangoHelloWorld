@@ -1,0 +1,24 @@
+<h1>{{ question.question_text }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'polls:vote' question.id %}" method="post" enctype="multipart/form-data">
+{% csrf_token %}
+{% for choice in question.choice_set.all %}
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
+{% endfor %}
+
+    <a href="{{MEDIA_URL}}{{ question.photo }}">{{ question.photo }}</a> ##
+    <a href="{{ question.photo.url }}">{{ question.photo }}</a>
+    <input type="file" name="photo" id="id_photo" />
+<input type="submit" value="Vote" />
+
+</form>
+question.photo.name == {{ question.photo.name }} <br>
+question.photo.url == {{ question.photo.url }} <br>
+question.photo.path == {{ question.photo.path }} <br>
+question.uploadfile.name == {{ question.phuploadfileoto.name }} <br>
+question.uploadfile.url == {{ question.uploadfile.url }} <br>
+question.uploadfile.path == {{ question.uploadfile.path }} <br>
+<a href="{{ question.uploadfile.url }}">{{ question.uploadfile }}</a>

@@ -1,0 +1,29 @@
+{% load static %}
+{% load utils %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}"/>
+
+<a href="{% url 'myapp:car_detail' 0 %}">新增车辆</a>
+
+{% if car_list %}
+    <ul>
+        {% for car in car_list %}
+            <li>{{ car.id }}#<a
+                    href="{% url 'myapp:car_detail' car.id %}">{{ car.carNum }}</a>#
+                #
+{#                {{ car.carColor|getcolorstr }}#}
+                {% getcolorstr2 car.carColor %}
+                #
+                {{ car.carPrice }}万元
+                #
+                {% for user in car.user.all %}
+                    {{ user.name }} {% if forloop.last == False %},{% endif %}
+                {% endfor %}
+                #
+                <a
+                        href="{% url 'myapp:car_delete' car.id %}">删除</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No cars are available.</p>
+{% endif %}

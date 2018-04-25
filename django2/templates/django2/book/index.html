@@ -1,0 +1,27 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}"/>
+
+
+<a href="{% url 'django2:book_detail' 0 %}">新增用户</a>
+
+{% if book_list %}
+    <ul>
+        {% for book in book_list %}
+            <li>{{ book.id }}#<a
+                    href="{% url 'django2:book_detail' book.id %}">{{ book.bookname }}</a>
+
+
+                {{ book.bookpapers }}
+
+                #
+
+                {{ book.author }}
+
+                <a
+                        href="{% url 'django2:book_delete' book.id %}">删除</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No books are available.</p>
+{% endif %}
