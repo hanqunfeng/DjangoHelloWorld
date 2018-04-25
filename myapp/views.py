@@ -1,4 +1,6 @@
 import datetime
+# 导入logging库
+import logging
 import time
 
 from django.core.cache import caches
@@ -14,6 +16,10 @@ from .libraries import utils
 from .models.car import Car
 from .models.identity_card import IdentityCard
 from .models.user import User
+
+# 获取logger的一个实例
+# logger = logging.getLogger(__name__)
+logger = logging.getLogger('myapp.log')
 
 cache = caches['default']
 
@@ -242,8 +248,6 @@ def car_save(request):
     return HttpResponseRedirect(reverse('myapp:car_detail', args=(car.id,)))
 
 
-from django.core import serializers
-from django.http import JsonResponse
 from utils import JSONUtil
 
 
@@ -272,5 +276,37 @@ def user_query_json_get(request, user_id):
     print(output)
 
     # print('_language', request.session['_language'])
+
+    logger.info('这是一个日志' + __name__)
+
+    from django.conf import settings
+    # 发送邮件
+    from django.core.mail import send_mail
+    send_mail('Subject here主题', 'Here is the message.消息', settings.DEFAULT_FROM_EMAIL,
+              ['qunfeng_han@126.com'], fail_silently=False)
+
+    # 一次可以发送多组邮件
+    from django.core.mail import send_mass_mail
+
+    message1 = ('Subject here', 'Here is the message', settings.DEFAULT_FROM_EMAIL,
+                ['qunfeng_han@126.com', 'hanqunfeng@lkmotion.com'])
+    message2 = ('Another Subject', 'Here is another message', settings.DEFAULT_FROM_EMAIL, ['qunfeng_han@126.com'])
+
+    send_mass_mail((message1, message2), fail_silently=False)
+
+    # 可以这是抄送附件等
+    from django.core.mail import EmailMultiAlternatives
+    msg = EmailMultiAlternatives('主题', '内容', settings.DEFAULT_FROM_EMAIL, ['qunfeng_han@126.com'],
+                                 cc=['hanqunfeng@lkmotion.com'])
+
+    # msg.content_subtype = "html" # 设置邮件格式，html可以发送内容为html，不推荐这么使用，可以使用下面的方式
+
+    html_content = '<p>这是一封<strong>重要的</strong>邮件.</p>'
+    msg.attach_alternative(html_content, "text/html")  # 如果接收方的邮件支持html，则显示该信息，否则显示原「内容」
+    # 添加附件（可选）
+    msg.attach_file('/Users/hanqunfeng/python_workspace/STATIC_ROOT/polls/images/background.jpg')
+
+    # 发送
+    msg.send()
 
     return JSONUtil.render_json(user, dict_key='user', safe=False)
