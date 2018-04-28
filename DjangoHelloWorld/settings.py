@@ -54,7 +54,7 @@ LOGGING = {
             'level': 'DEBUG',  # 设置级别
             'filters': ['require_debug_true'],  # 设置过滤器，多个用逗号分割
             'class': 'logging.StreamHandler',  # 处理器，这里是控制台打印
-            'formatter': 'verbose'  # 设置日志格式
+            'formatter': 'standard'  # 设置日志格式
         },
         'file': {
             'level': 'DEBUG',
@@ -84,15 +84,25 @@ LOGGING = {
         'django': {  # 日志名称路径前缀，即logging.getLogger(__name__)获取logger对象时，_name__得到的前缀与之匹配即可，比如__name__得到的是django.server
             'handlers': ['console'],
             'propagate': True,
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),  # 只有设置DEBUG = True时，该配置才会打印sql信息
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),  # 只有设置DEBUG = True时，该配置才会打印sql信息
         },
         'django.request': {
             'handlers': ['rotatingFile'],
             'level': 'ERROR',
             'propagate': True,  # 设置为False，表示不像其父级别传递日志内容
         },
-        'myapp.log': {  # 也可以这样创建logger对象，logging.getLogger('myapp.log')
-            'handlers': ['file', 'rotatingFile', 'timedRotatingFile'],
+        'django.db': {  # sql打印
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,  # 设置为False，表示不像其父级别传递日志内容
+        },
+        'django_redis': {  # redis
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,  # 设置为False，表示不像其父级别传递日志内容
+        },
+        'myapp': {  # 也可以这样创建logger对象，logging.getLogger('myapp.log')
+            'handlers': ['console', 'file', 'rotatingFile', 'timedRotatingFile'],
             'level': 'INFO',  # 这里的日志级别不能低于处理器中设置的日志级别
         },
     },
@@ -289,8 +299,24 @@ CACHES = {
         'LOCATION': '127.0.0.1:11211',
         'TIMEOUT': 600,  # 单位秒，默认300s, 60s * 10 = 10min
         'KEY_PREFIX': 'myapp',  # 缓存键的字符串前缀
+    },
+    "redis": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        'TIMEOUT': 600,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SOCKET_CONNECT_TIMEOUT": 5,  # in seconds socket 建立连接超时设置
+            "SOCKET_TIMEOUT": 5,  # in seconds 连接建立后的读写操作超时设置
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",  # 压缩支持
+            "IGNORE_EXCEPTIONS": True,  # 如果redis服务关闭，不会引起异常，memcached默认支持
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100}  # 连接池
+        }
     }
 }
+# redis记录异常日志
+DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
+# DJANGO_REDIS_LOGGER = 'some.specified.logger'
 
 # email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -18,10 +18,11 @@ from .models.identity_card import IdentityCard
 from .models.user import User
 
 # 获取logger的一个实例
-# logger = logging.getLogger(__name__)
-logger = logging.getLogger('myapp.log')
+logger = logging.getLogger(__name__)
+# logger = logging.getLogger('myapp.log')
 
 cache = caches['default']
+redis_cache = caches['redis']
 
 
 # Create your views here.
@@ -266,14 +267,22 @@ from utils import XMLUtil
 
 
 def user_query_xml(request):
-    user_list = User.objects.all()
+    user_list = redis_cache.get('user_list')
+    if not user_list:
+        user_list = User.objects.all()
+        redis_cache.set('user_list', user_list)
     return XMLUtil.render_xml(user_list)
 
 
 def user_query_xml_get(request, user_id):
     from signals.signals import my_singal
     my_singal.send(sender=__name__, key1='qqq', key2=10, key3=100)
-    user = User.objects.get(pk=user_id)
+    logger.info("user_query_xml_get 开始")
+
+    user = redis_cache.get('user_' + str(user_id))
+    if not user:
+        user = User.objects.get(pk=user_id)
+        redis_cache.set('user_' + str(user_id), user)
     return XMLUtil.render_xml(user)
 
 
