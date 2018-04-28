@@ -40,7 +40,9 @@ INSTALLED_APPS = [
 
 ## 4.创建和更新数据库：
 `python manage.py makemigrations` # 全部应用都会创建迁移文件
+
 `python manage.py makemigrations polls` # 只创建指定的应用
+
 `python manage.py migrate` # 执行迁移文件到数据库
 
 查看迁移文件生成的sql:
@@ -59,6 +61,7 @@ Django的管理后台站点是默认启用的。 让我们启动开发服务器�
 启动：
 
 `python manage.py runserver 9000` #指定启动端口
+
 `python manage.py runserver 0.0.0.0:9000` #指定启动ip+端口
 
 ## 6.测试：
@@ -72,6 +75,7 @@ Django的管理后台站点是默认启用的。 让我们启动开发服务器�
 
 ## 7.检查代码覆盖率：
 `pip install coverage`
+
 `coverage run my_program.py arg1 arg2`
 
 django检查方法：
@@ -86,6 +90,7 @@ django检查方法：
 
 ## 8.mysql:
 `brew install mysql-connector-c`
+
 `pip install mysqlclient`
 
 需要提前创建好数据库
