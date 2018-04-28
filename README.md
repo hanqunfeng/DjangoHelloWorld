@@ -945,6 +945,7 @@ settings.py:
 DEBUG = False # 此时很多问题就会出现，需要增加很多额外的配置才能正常工作，这也是为了包含生产环境吧
 
 ALLOWED_HOSTS = ['127.0.0.1']
+# ALLOWED_HOSTS = ['*', ]  # 允许所有机器访问
 
 STATIC_URL = 'http://localhost/static/'      # apache部署的静态文件服务器访问地址
 
