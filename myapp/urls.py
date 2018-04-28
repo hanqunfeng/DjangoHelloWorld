@@ -24,4 +24,7 @@ urlpatterns = [
 
     path('users/json/', views.user_query_json, name='user_query_json'),
     path('users/json/<int:user_id>/', views.user_query_json_get, name='user_query_json_get'),
+    path('users/xml/', views.user_query_xml, name='user_query_xml'),
+    path('users/xml/<int:user_id>/', views.user_query_xml_get, name='user_query_xml_get'),
+
 ]

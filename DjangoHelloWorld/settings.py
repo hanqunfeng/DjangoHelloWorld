@@ -301,3 +301,15 @@ EMAIL_HOST_USER = 'hanqf2008@163.com'  # 帐号
 EMAIL_HOST_PASSWORD = 'Hjy87473201'  # 密码
 DEFAULT_FROM_EMAIL = 'hanqf <hanqf2008@163.com>'
 # DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+# 密码哈希算法，默认使用第一个加密，后面的可以用于老密码的验证，但是验证成功后会自动转换为第一种加密算法
+# argon2的算法要优于md5
+# 'django.contrib.auth.hashers.MD5PasswordHasher'
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+]

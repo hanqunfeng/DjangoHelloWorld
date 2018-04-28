@@ -88,6 +88,8 @@ Current language: {{ LANGUAGE_CODE }} <br>
 <div id="userdiv"></div>
 <div id="userlistdiv"></div>
 
+<div id="userdivxml"></div>
+
 <script>
 
     $.getJSON("{% url 'myapp:user_query_json_get' 1 %}", function(ret) {
@@ -108,5 +110,25 @@ Current language: {{ LANGUAGE_CODE }} <br>
 
     alert(gettext('hello js'))
     alert(gettext('o my god'))
+
+
+    $.ajax({
+        url:"{% url 'myapp:user_query_xml' %}",
+        type:"GET",
+        dataType:'xml',
+        success:function(xml){
+            $(xml).find("object").each(function(i) {
+                //获取id
+                var id=$(this).attr("pk");
+                var content = "";
+                $(this).find("field").each(function(j){
+                    content += $(this).attr('name') + "==" + $(this).text() + "#"
+                })
+                $("#userdivxml").append(id+ "#" + content +"<br>")
+
+            });
+        },
+        error:function(){ alert("加载失败"); }
+    })
 
 </script>

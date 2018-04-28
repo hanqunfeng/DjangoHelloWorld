@@ -1,15 +1,18 @@
-import requests  # pip install requests
 from django.db import connection
+from django.test import Client
 from django.test import TestCase
 
 from myapp.models.car import Car
 from myapp.models.user import User
 from myapp.utils import dbutils
+from utils import XMLUtil, JSONUtil
 
 
 # Create your tests here.
 
 class UserTests(TestCase):
+    client = None
+
     @classmethod
     def setUpClass(cls):  # 测试前执行
         ua = User.objects.create(name="yyyyy")
@@ -21,6 +24,7 @@ class UserTests(TestCase):
         cb.user.add(uc, ua)
         cc = Car.objects.create(carNum='cccccc', carColor=1, carPrice=33.22)
         cc.user.add(ua)
+        cls.client = Client()
 
         super().setUpClass()
 
@@ -28,18 +32,34 @@ class UserTests(TestCase):
     def tearDownClass(cls):  # 测试后执行
         super().tearDownClass()
 
+    # def test_user_save(self):
+    #     s = requests.session()
+    #     print(s.headers)
+    #     url = "http://127.0.0.1:8000/myapp/users/save/"
+    #
+    #     postdata = {"name": "测试用户"}
+    #
+    #     r = requests.post(url, data=postdata)
+    #
+    #     print(r.status_code)
+    #     print(r.content)
+    #     print(r.request)
+
     def test_user_save(self):
-        s = requests.session()
-        print(s.headers)
-        url = "http://127.0.0.1:8000/myapp/users/save/"
+        postdata = {'name': '测试用户', 'birth_day': '2011-01-01', 'phone': '123123123123', 'email': '123@123.com'}
+        response = self.client.post('/myapp/users/save/', postdata, follow=True)
+        print(response.redirect_chain)
+        print(response.status_code)
+        print(response.content)
+        print(User.objects.all())
 
-        postdata = {"name": "测试用户"}
-
-        r = requests.post(url, data=postdata)
-
-        print(r.status_code)
-        print(r.content)
-        print(r.request)
+    def test_get_users_json(self):
+        response = self.client.get('/myapp/users/json/')
+        print('==================test_get_user_json start=======================')
+        print(response.status_code)
+        # print(response.content)
+        print(response.json())
+        print('==================test_get_user_json end=======================')
 
     def test_sql(self):
         print("1==================================")
@@ -118,3 +138,29 @@ class UserTests(TestCase):
         users = User.objects.annotate(car_min_price=Min('car__carPrice'), car_max_price=Max('car__carPrice'))
         for user in users:
             print(user.id, '--', user.name, 'min$', user.car_min_price, 'max$', user.car_max_price)
+
+    def test_xml(self):
+        print("==============test_xml start==================")
+        user_list = User.objects.all()
+        xml = XMLUtil.to_xml(user_list)
+        print(xml)
+
+        objectList = XMLUtil.xml_to_list(xml)
+        print(objectList)
+        for object in objectList:
+            print(object)
+            print(object.name)
+        print("==============test_xml end==================")
+
+    def test_json(self):
+        print("==============test_json start==================")
+        user_list = User.objects.filter(pk=1)
+        json = JSONUtil.to_json(user_list)
+        print(json)
+
+        user_list = JSONUtil.json_to_list(json)
+        print(user_list)
+        for user in user_list:
+            print(user)
+
+        print("==============test_json end==================")

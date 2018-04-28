@@ -5,6 +5,7 @@ import json
 from django.core.serializers import serialize, deserialize
 from django.db import models
 from django.db.models.query import QuerySet
+from django.http import JsonResponse
 
 
 class MyEncoder(json.JSONEncoder):
@@ -42,48 +43,39 @@ class MyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def jsonBack(json):
-    """    进行Json字符串的反序列化
-        一般来说，从网络得回的POST（或者GET）
-        参数中所包含json数据
-        例如，用POST传过来的参数中有一个key value键值对为
-        request.POST['update']
-        = "[{pk:1,name:'changename'},{pk:2,name:'changename2'}]"
-        要将这个value进行反序列化
-        则可以使用Django内置的序列化与反序列化
-        但是问题在于
-        传回的有可能是代表单个对象的json字符串
-        如：
-        request.POST['update'] = "{pk:1,name:'changename'}"
-        这是，由于Django无法处理单个对象
-        因此要做适当的处理
-        将其模拟成一个数组，也就是用'[]'进行包围
-        再进行反序列化
-    """
-    if json[0] == '[':
-        return deserialize('json', json)
-    else:
-        return deserialize('json', '[' + json + ']')
-
-
-def getJson(obj):
+def to_json2(obj):
     """    使用MyEncoder这个自定义的规则类来序列化对象
     """
     # result = dict(args)
     return json.dumps(obj, cls=MyEncoder)
 
 
-from django.core import serializers
-from django.http import JsonResponse
+# 反序列化
+def json_to_list(json):
+    if json[0] == '[':
+        deserializedObjectList = deserialize('json', json)
+    else:
+        deserializedObjectList = deserialize('json', '[' + json + ']')
+
+    list = []
+    for deserializedObject in deserializedObjectList:
+        list.append(deserializedObject.object)
+    return list
+
+
+# 序列化
+def to_json(obj):
+    if isinstance(obj, models.Model):
+        obj = [obj]  # 因为serialize只支持可迭代对象，比如querySet对象
+    data = serialize("json", obj)
+    return data
 
 
 # 该方法没有做严格的验证，只支持dict,models.Model,models.QuerySet，可以根据需要自行扩展
 def render_json(data, dict_key='data', **response_kwargs):
     if isinstance(data, dict):
         return JsonResponse(data)
-    if isinstance(data, models.Model):
-        data = [data]  # 因为serialize只支持querySet对象
-    data = serializers.serialize("json", data)
+    data = to_json(data)
     if 'safe' in response_kwargs and response_kwargs['safe'] is False:
         pass
     else:

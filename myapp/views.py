@@ -30,7 +30,8 @@ cache = caches['default']
 def user_index(request):
     user_list = cache.get('user_list')
     if not user_list:
-        user_list = User.objects.order_by('-id')[:10]
+        # user_list = User.objects.order_by('-id')[5:10]  # 这种方式可以用来实现分页，比如mysql会在sql最后加上[LIMIT 5 OFFSET 5]
+        user_list = User.objects.order_by('-id')[:10]  # 这种方式可以用来实现分页，比如mysql会在sql最后加上[LIMIT 10]
         cache.set('user_list', user_list)
     # Q对象用于封装查询条件，功能更强大，支持OR(|)和AND(,)，同时支持NOT(~)
     # filter只支持AND，所以可以组合使用Q对象和fiter方法来实现复杂查询
@@ -257,7 +258,23 @@ def user_query_json(request):
     # context = {'user_list': user_list}
     # return JsonResponse(context)
     # return JsonResponse(user_list, safe=False)  # safe=False可以传递对象，否则必须传递一个dict
+
     return JSONUtil.render_json(user_list, dict_key='user_list', safe=False)
+
+
+from utils import XMLUtil
+
+
+def user_query_xml(request):
+    user_list = User.objects.all()
+    return XMLUtil.render_xml(user_list)
+
+
+def user_query_xml_get(request, user_id):
+    from signals.signals import my_singal
+    my_singal.send(sender=__name__, key1='qqq', key2=10, key3=100)
+    user = User.objects.get(pk=user_id)
+    return XMLUtil.render_xml(user)
 
 
 def user_query_json_get(request, user_id):
@@ -281,18 +298,16 @@ def user_query_json_get(request, user_id):
 
     from django.conf import settings
     # 发送邮件
-    from django.core.mail import send_mail
-    send_mail('Subject here主题', 'Here is the message.消息', settings.DEFAULT_FROM_EMAIL,
-              ['qunfeng_han@126.com'], fail_silently=False)
+    # send_mail('Subject here主题', 'Here is the message.消息', settings.DEFAULT_FROM_EMAIL,
+    #           ['qunfeng_han@126.com'], fail_silently=False)
 
     # 一次可以发送多组邮件
-    from django.core.mail import send_mass_mail
 
     message1 = ('Subject here', 'Here is the message', settings.DEFAULT_FROM_EMAIL,
                 ['qunfeng_han@126.com', 'hanqunfeng@lkmotion.com'])
     message2 = ('Another Subject', 'Here is another message', settings.DEFAULT_FROM_EMAIL, ['qunfeng_han@126.com'])
 
-    send_mass_mail((message1, message2), fail_silently=False)
+    # send_mass_mail((message1, message2), fail_silently=False)
 
     # 可以这是抄送附件等
     from django.core.mail import EmailMultiAlternatives
@@ -307,6 +322,6 @@ def user_query_json_get(request, user_id):
     msg.attach_file('/Users/hanqunfeng/python_workspace/STATIC_ROOT/polls/images/background.jpg')
 
     # 发送
-    msg.send()
+    # msg.send()
 
     return JSONUtil.render_json(user, dict_key='user', safe=False)
