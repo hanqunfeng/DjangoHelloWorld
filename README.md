@@ -931,7 +931,7 @@ PS：管理员密码忘记了可以通过如下方法修改：
 $ python manage.py shell
 >>> from django.contrib.auth.models import User
 >>> user = User.objects.get(pk=1) # 可以通过查询获得用户对象
->>> user.set_password('hqf25485090')
+>>> user.set_password('xxxxxxxxx')
 >>> user.save()
 >>> quit()
 ```
