@@ -840,7 +840,7 @@ from django.conf import settings
 # 发送邮件
 from django.core.mail import send_mail
 send_mail('Subject here主题', 'Here is the message.消息', settings.DEFAULT_FROM_EMAIL,
-          ['qunfeng_han@126.com'], fail_silently=False)
+          ['aaaaa@126.com'], fail_silently=False)
 
 # 一次可以发送多组邮件
 from django.core.mail import send_mass_mail
