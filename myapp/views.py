@@ -308,20 +308,20 @@ def user_query_json_get(request, user_id):
     from django.conf import settings
     # 发送邮件
     # send_mail('Subject here主题', 'Here is the message.消息', settings.DEFAULT_FROM_EMAIL,
-    #           ['qunfeng_han@126.com'], fail_silently=False)
+    #           ['aaaaa@126.com'], fail_silently=False)
 
     # 一次可以发送多组邮件
 
     message1 = ('Subject here', 'Here is the message', settings.DEFAULT_FROM_EMAIL,
-                ['qunfeng_han@126.com', 'hanqunfeng@lkmotion.com'])
-    message2 = ('Another Subject', 'Here is another message', settings.DEFAULT_FROM_EMAIL, ['qunfeng_han@126.com'])
+                ['aaaaa@126.com', 'aaaaa@163.com'])
+    message2 = ('Another Subject', 'Here is another message', settings.DEFAULT_FROM_EMAIL, ['aaaaa@126.com'])
 
     # send_mass_mail((message1, message2), fail_silently=False)
 
     # 可以这是抄送附件等
     from django.core.mail import EmailMultiAlternatives
-    msg = EmailMultiAlternatives('主题', '内容', settings.DEFAULT_FROM_EMAIL, ['qunfeng_han@126.com'],
-                                 cc=['hanqunfeng@lkmotion.com'])
+    msg = EmailMultiAlternatives('主题', '内容', settings.DEFAULT_FROM_EMAIL, ['aaaaa@126.com'],
+                                 cc=['aaaaa@163.com'])
 
     # msg.content_subtype = "html" # 设置邮件格式，html可以发送内容为html，不推荐这么使用，可以使用下面的方式
 

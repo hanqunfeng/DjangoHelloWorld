@@ -323,9 +323,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.163.com'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'hanqf2008@163.com'  # 帐号
+EMAIL_HOST_USER = 'xxxxx@163.com'  # 帐号
 EMAIL_HOST_PASSWORD = 'xxxxxxxxx'  # 密码
-DEFAULT_FROM_EMAIL = 'hanqf <hanqf2008@163.com>'
+DEFAULT_FROM_EMAIL = 'hanqf <xxxxx@163.com>'
 # DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
